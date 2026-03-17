@@ -218,24 +218,25 @@ final class MainChatViewController: UIViewController {
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
         
-        bottomContainerBottom = bottomContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-        
+        let bottomBottomConstraint = bottomContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        bottomContainerBottom = bottomBottomConstraint
+
         NSLayoutConstraint.activate([
             headerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             headerView.heightAnchor.constraint(equalToConstant: 76),
-            
+
             menuButton.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 32),
             menuButton.centerYAnchor.constraint(equalTo: headerView.centerYAnchor, constant: 6),
             menuButton.widthAnchor.constraint(equalToConstant: 40),
             menuButton.heightAnchor.constraint(equalToConstant: 40),
-            
+
             profileButton.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -32),
             profileButton.centerYAnchor.constraint(equalTo: headerView.centerYAnchor, constant: 6),
             profileButton.widthAnchor.constraint(equalToConstant: 40),
             profileButton.heightAnchor.constraint(equalToConstant: 40),
-            
+
             calendarButton.trailingAnchor.constraint(equalTo: profileButton.leadingAnchor, constant: -12),
             calendarButton.centerYAnchor.constraint(equalTo: headerView.centerYAnchor, constant: 6),
             calendarButton.widthAnchor.constraint(equalToConstant: 40),
@@ -245,11 +246,11 @@ final class MainChatViewController: UIViewController {
             welcomeContainer.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -80),
             welcomeContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32),
             welcomeContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -32),
-            
+
             greetingLabel.topAnchor.constraint(equalTo: welcomeContainer.topAnchor),
             greetingLabel.leadingAnchor.constraint(equalTo: welcomeContainer.leadingAnchor),
             greetingLabel.trailingAnchor.constraint(equalTo: welcomeContainer.trailingAnchor),
-            
+
             mainTitleLabel.topAnchor.constraint(equalTo: greetingLabel.bottomAnchor, constant: 10),
             mainTitleLabel.leadingAnchor.constraint(equalTo: welcomeContainer.leadingAnchor),
             mainTitleLabel.trailingAnchor.constraint(equalTo: welcomeContainer.trailingAnchor),
@@ -262,7 +263,7 @@ final class MainChatViewController: UIViewController {
 
             bottomContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             bottomContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            bottomContainerBottom!,
+            bottomBottomConstraint,
 
             suggestionsScrollView.topAnchor.constraint(equalTo: bottomContainer.topAnchor),
             suggestionsScrollView.leadingAnchor.constraint(equalTo: bottomContainer.leadingAnchor),
@@ -566,7 +567,9 @@ extension MainChatViewController: UITableViewDataSource {
             return tableView.dequeueReusableCell(withIdentifier: "typingCell", for: indexPath)
         }
         let item = items[indexPath.row]
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! ModernChatCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? ModernChatCell else {
+            return UITableViewCell()
+        }
         cell.configure(with: item)
         cell.onOpenLink = { [weak self] link in
             let safari = SFSafariViewController(url: link)

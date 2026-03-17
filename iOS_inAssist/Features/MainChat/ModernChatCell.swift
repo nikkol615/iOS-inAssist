@@ -21,14 +21,15 @@ final class ModernChatCell: UITableViewCell {
     
     private let linkButton: UIButton = {
         let button = UIButton(type: .system)
-        button.backgroundColor = AppColors.cardBackground
+        button.backgroundColor = UIColor.systemBlue.withAlphaComponent(0.12)
         button.setTitle("Open in calendar", for: .normal)
         button.titleLabel?.font = AppFonts.bodySmall
         button.layer.cornerRadius = AppCornerRadius.small
-        button.tintColor = AppColors.primaryText
+        button.tintColor = .systemBlue
         button.isHidden = true
         button.contentEdgeInsets = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12)
-        AppShadows.card(button)
+        button.layer.borderWidth = 1
+        button.layer.borderColor = UIColor.systemBlue.withAlphaComponent(0.35).cgColor
         return button
     }()
     
@@ -45,6 +46,9 @@ final class ModernChatCell: UITableViewCell {
     private var bubbleLeading: NSLayoutConstraint?
     private var bubbleTrailing: NSLayoutConstraint?
     private var bubbleMaxWidth: NSLayoutConstraint?
+    private var linkButtonBottom: NSLayoutConstraint?
+    private var bubbleBottomWithLink: NSLayoutConstraint?
+    private var bubbleBottomWithoutLink: NSLayoutConstraint?
 
     // MARK: - Init
     
@@ -75,12 +79,13 @@ final class ModernChatCell: UITableViewCell {
         
         bubbleLeading = bubbleView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16)
         bubbleTrailing = bubbleView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16)
-        bubbleMaxWidth = bubbleView.widthAnchor.constraint(lessThanOrEqualToConstant: 280)
-        
+        let bubbleMaxWidthConstraint = bubbleView.widthAnchor.constraint(lessThanOrEqualToConstant: 280)
+        bubbleMaxWidth = bubbleMaxWidthConstraint
+
         NSLayoutConstraint.activate([
             bubbleView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4),
-            bubbleMaxWidth!,
-            
+            bubbleMaxWidthConstraint,
+
             messageLabel.topAnchor.constraint(equalTo: bubbleView.topAnchor, constant: 14),
             messageLabel.leadingAnchor.constraint(equalTo: bubbleView.leadingAnchor, constant: 14),
             messageLabel.trailingAnchor.constraint(equalTo: bubbleView.trailingAnchor, constant: -14),
@@ -93,6 +98,11 @@ final class ModernChatCell: UITableViewCell {
             actionButtonsStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             actionButtonsStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4)
         ])
+
+        linkButtonBottom = linkButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4)
+        bubbleBottomWithLink = bubbleView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -44)
+        bubbleBottomWithoutLink = bubbleView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4)
+        bubbleBottomWithoutLink?.isActive = true
 
         linkButton.addTarget(self, action: #selector(handleLinkTap), for: .touchUpInside)
     }
@@ -132,19 +142,24 @@ final class ModernChatCell: UITableViewCell {
 
             let showActions = item.text.contains("Would you like") || item.text.contains("Suggestion")
             actionButtonsStack.isHidden = !showActions
-            
+
             if showActions && actionButtonsStack.arrangedSubviews.isEmpty {
                 setupActionButtons()
             }
         }
 
         if !linkButton.isHidden {
-            NSLayoutConstraint.activate([
-                linkButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4)
-            ])
-            bubbleView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -50).isActive = true
+            linkButtonBottom?.isActive = true
+            bubbleBottomWithLink?.isActive = true
+            bubbleBottomWithoutLink?.isActive = false
         } else if actionButtonsStack.isHidden {
-            bubbleView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4).isActive = true
+            linkButtonBottom?.isActive = false
+            bubbleBottomWithLink?.isActive = false
+            bubbleBottomWithoutLink?.isActive = true
+        } else {
+            linkButtonBottom?.isActive = false
+            bubbleBottomWithLink?.isActive = false
+            bubbleBottomWithoutLink?.isActive = true
         }
     }
     
@@ -216,5 +231,8 @@ final class ModernChatCell: UITableViewCell {
         bubbleView.layer.shadowOpacity = 0
         bubbleLeading?.isActive = false
         bubbleTrailing?.isActive = false
+        linkButtonBottom?.isActive = false
+        bubbleBottomWithLink?.isActive = false
+        bubbleBottomWithoutLink?.isActive = false
     }
 }

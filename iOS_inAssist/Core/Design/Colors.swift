@@ -15,29 +15,34 @@ extension UIColor {
 
         self.init(red: r, green: g, blue: b, alpha: alpha)
     }
+
+    /// Returns the color for the given hex string, or a fallback if parsing fails.
+    static func hex(_ string: String, alpha: CGFloat = 1.0, default fallback: UIColor = .black) -> UIColor {
+        UIColor(hex: string, alpha: alpha) ?? fallback
+    }
 }
 
 // MARK: - Design System Colors
 
 enum AppColors {
-    static let background = UIColor(hex: "#F9F9F9")!
+    static let background = UIColor.hex("#F9F9F9", default: .white)
     static let white = UIColor.white
-    static let black = UIColor(hex: "#1A1A1A")!
+    static let black = UIColor.hex("#1A1A1A")
 
-    static let primaryText = UIColor(hex: "#1A1A1A")!
-    static let secondaryText = UIColor(hex: "#808080")!
-    static let messageText = UIColor(hex: "#505050")!
+    static let primaryText = UIColor.hex("#1A1A1A")
+    static let secondaryText = UIColor.hex("#808080")
+    static let messageText = UIColor.hex("#505050")
 
-    static let userBubble = UIColor(hex: "#F0F0F0")!
+    static let userBubble = UIColor.hex("#F0F0F0")
     static let cardBackground = UIColor.white.withAlphaComponent(0.72)
-    static let buttonBackground = UIColor(hex: "#1A1A1A")!
-    static let buttonBorder = UIColor(hex: "#373737")!
-    static let divider = UIColor(hex: "#DADADA")!
-    static let inputBorder = UIColor(hex: "#F1F1F1")!
-    static let chipBackground = UIColor(hex: "#EAEAEA")!
+    static let buttonBackground = UIColor.hex("#1A1A1A")
+    static let buttonBorder = UIColor.hex("#373737")
+    static let divider = UIColor.hex("#DADADA")
+    static let inputBorder = UIColor.hex("#F1F1F1")
+    static let chipBackground = UIColor.hex("#EAEAEA")
 
-    static let gradientStart = UIColor(hex: "#F9F9F9")!.withAlphaComponent(0)
-    static let gradientEnd = UIColor(hex: "#D6D6D6")!
+    static let gradientStart = UIColor.hex("#F9F9F9", default: .white).withAlphaComponent(0)
+    static let gradientEnd = UIColor.hex("#D6D6D6", default: .gray)
 }
 
 // MARK: - Design System Fonts

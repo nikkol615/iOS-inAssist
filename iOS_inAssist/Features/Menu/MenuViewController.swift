@@ -342,7 +342,9 @@ extension MenuViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "chatCell", for: indexPath) as! ChatListCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "chatCell", for: indexPath) as? ChatListCell else {
+            return UITableViewCell()
+        }
         let chat = chats[indexPath.row]
         cell.configure(with: chat)
         return cell

@@ -1,7 +1,13 @@
 import Foundation
 
 enum APIConfig {
-    static let baseURL = URL(string: "http://ukwc8cko48o4s4w08co0c448.194.147.95.202.sslip.io")!
+    private static let baseURLString = "http://ukwc8cko48o4s4w08co0c448.194.147.95.202.sslip.io"
+    static let baseURL: URL = {
+        guard let url = URL(string: baseURLString) else {
+            fatalError("Invalid APIConfig baseURL: \(baseURLString)")
+        }
+        return url
+    }()
     static let redirectScheme = "inassist"
     static var redirectURI: String { "\(redirectScheme)://auth" }
 }
