@@ -7,24 +7,24 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		C141CE2D2F3207E6005BAC48 /* iOS_inAssist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iOS_inAssist.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C141CE4E2F320885005BAC48 /* iOS_inAssist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iOS_inAssist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		C141CE3F2F3207E8005BAC48 /* Exceptions for "iOS_inAssist" folder in "iOS_inAssist" target */ = {
+		C1A0B5AA2F7A0A2E00A1B2C3 /* Exceptions for "iOS_inAssist" folder in "iOS_inAssist" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Info.plist,
+				Resources/Info.plist,
 			);
-			target = C141CE2C2F3207E6005BAC48 /* iOS_inAssist */;
+			target = C141CE4D2F320885005BAC48 /* iOS_inAssist */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		C141CE2F2F3207E6005BAC48 /* iOS_inAssist */ = {
+		C141CE502F320885005BAC48 /* iOS_inAssist */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				C141CE3F2F3207E8005BAC48 /* Exceptions for "iOS_inAssist" folder in "iOS_inAssist" target */,
+				C1A0B5AA2F7A0A2E00A1B2C3 /* Exceptions for "iOS_inAssist" folder in "iOS_inAssist" target */,
 			);
 			path = iOS_inAssist;
 			sourceTree = "<group>";
@@ -32,7 +32,7 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		C141CE2A2F3207E6005BAC48 /* Frameworks */ = {
+		C141CE4B2F320885005BAC48 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -42,18 +42,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		C141CE242F3207E6005BAC48 = {
+		C141CE452F320885005BAC48 = {
 			isa = PBXGroup;
 			children = (
-				C141CE2F2F3207E6005BAC48 /* iOS_inAssist */,
-				C141CE2E2F3207E6005BAC48 /* Products */,
+				C141CE502F320885005BAC48 /* iOS_inAssist */,
+				C141CE4F2F320885005BAC48 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		C141CE2E2F3207E6005BAC48 /* Products */ = {
+		C141CE4F2F320885005BAC48 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				C141CE2D2F3207E6005BAC48 /* iOS_inAssist.app */,
+				C141CE4E2F320885005BAC48 /* iOS_inAssist.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -61,64 +61,64 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		C141CE2C2F3207E6005BAC48 /* iOS_inAssist */ = {
+		C141CE4D2F320885005BAC48 /* iOS_inAssist */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C141CE402F3207E8005BAC48 /* Build configuration list for PBXNativeTarget "iOS_inAssist" */;
+			buildConfigurationList = C141CE612F320887005BAC48 /* Build configuration list for PBXNativeTarget "iOS_inAssist" */;
 			buildPhases = (
-				C141CE292F3207E6005BAC48 /* Sources */,
-				C141CE2A2F3207E6005BAC48 /* Frameworks */,
-				C141CE2B2F3207E6005BAC48 /* Resources */,
+				C141CE4A2F320885005BAC48 /* Sources */,
+				C141CE4B2F320885005BAC48 /* Frameworks */,
+				C141CE4C2F320885005BAC48 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				C141CE2F2F3207E6005BAC48 /* iOS_inAssist */,
+				C141CE502F320885005BAC48 /* iOS_inAssist */,
 			);
 			name = iOS_inAssist;
 			packageProductDependencies = (
 			);
 			productName = iOS_inAssist;
-			productReference = C141CE2D2F3207E6005BAC48 /* iOS_inAssist.app */;
+			productReference = C141CE4E2F320885005BAC48 /* iOS_inAssist.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		C141CE252F3207E6005BAC48 /* Project object */ = {
+		C141CE462F320885005BAC48 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1630;
 				LastUpgradeCheck = 1630;
 				TargetAttributes = {
-					C141CE2C2F3207E6005BAC48 = {
+					C141CE4D2F320885005BAC48 = {
 						CreatedOnToolsVersion = 16.3;
 					};
 				};
 			};
-			buildConfigurationList = C141CE282F3207E6005BAC48 /* Build configuration list for PBXProject "iOS_inAssist" */;
+			buildConfigurationList = C141CE492F320885005BAC48 /* Build configuration list for PBXProject "iOS_inAssist" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = C141CE242F3207E6005BAC48;
+			mainGroup = C141CE452F320885005BAC48;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = C141CE2E2F3207E6005BAC48 /* Products */;
+			productRefGroup = C141CE4F2F320885005BAC48 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				C141CE2C2F3207E6005BAC48 /* iOS_inAssist */,
+				C141CE4D2F320885005BAC48 /* iOS_inAssist */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		C141CE2B2F3207E6005BAC48 /* Resources */ = {
+		C141CE4C2F320885005BAC48 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -128,7 +128,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		C141CE292F3207E6005BAC48 /* Sources */ = {
+		C141CE4A2F320885005BAC48 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -138,7 +138,7 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		C141CE412F3207E8005BAC48 /* Debug */ = {
+		C141CE622F320887005BAC48 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -146,13 +146,13 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = CKWBF8JX8A;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = iOS_inAssist/Info.plist;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = iOS_inAssist/Resources/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UIMainStoryboardFile = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -162,11 +162,11 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
-		C141CE422F3207E8005BAC48 /* Release */ = {
+		C141CE632F320887005BAC48 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -174,13 +174,13 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = CKWBF8JX8A;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = iOS_inAssist/Info.plist;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = iOS_inAssist/Resources/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UIMainStoryboardFile = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -190,11 +190,11 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
-		C141CE432F3207E8005BAC48 /* Debug */ = {
+		C141CE642F320887005BAC48 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -258,7 +258,7 @@
 			};
 			name = Debug;
 		};
-		C141CE442F3207E8005BAC48 /* Release */ = {
+		C141CE652F320887005BAC48 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -318,25 +318,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C141CE282F3207E6005BAC48 /* Build configuration list for PBXProject "iOS_inAssist" */ = {
+		C141CE492F320885005BAC48 /* Build configuration list for PBXProject "iOS_inAssist" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C141CE432F3207E8005BAC48 /* Debug */,
-				C141CE442F3207E8005BAC48 /* Release */,
+				C141CE642F320887005BAC48 /* Debug */,
+				C141CE652F320887005BAC48 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C141CE402F3207E8005BAC48 /* Build configuration list for PBXNativeTarget "iOS_inAssist" */ = {
+		C141CE612F320887005BAC48 /* Build configuration list for PBXNativeTarget "iOS_inAssist" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C141CE412F3207E8005BAC48 /* Debug */,
-				C141CE422F3207E8005BAC48 /* Release */,
+				C141CE622F320887005BAC48 /* Debug */,
+				C141CE632F320887005BAC48 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = C141CE252F3207E6005BAC48 /* Project object */;
+	rootObject = C141CE462F320885005BAC48 /* Project object */;
 }
