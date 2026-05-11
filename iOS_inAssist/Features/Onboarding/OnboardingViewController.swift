@@ -17,7 +17,7 @@ final class OnboardingViewController: UIViewController {
 
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Welcome to Ai"
+        label.text = "Добро пожаловать"
         label.font = AppFonts.titleLarge
         label.textColor = AppColors.primaryText
         label.textAlignment = .center
@@ -26,7 +26,7 @@ final class OnboardingViewController: UIViewController {
 
     private let subtitleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Sign in with Google to start planning your meetings with AI."
+        label.text = "Войдите через Google, чтобы планировать встречи с ИИ."
         label.font = AppFonts.bodyLarge
         label.textColor = AppColors.secondaryText
         label.textAlignment = .center
@@ -48,7 +48,7 @@ final class OnboardingViewController: UIViewController {
         let googleIcon = UIImage(systemName: "g.circle.fill")?.withRenderingMode(.alwaysTemplate)
         config.image = googleIcon
 
-        var titleAttr = AttributedString("Sign in with Google")
+        var titleAttr = AttributedString("Войти через Google")
         titleAttr.font = AppFonts.button
         config.attributedTitle = titleAttr
 
@@ -208,8 +208,16 @@ final class OnboardingViewController: UIViewController {
     }
 
     private func navigateToChat() {
-        let chatVC = MainChatViewController()
-        navigationController?.setViewControllers([chatVC], animated: true)
+        // Figma: onboarding2.jpg — шаг 2: имя/фамилия.
+        // Показываем если имя ещё не задано.
+        let hasName = UserDefaults.standard.string(forKey: "inassist.user.firstName") != nil
+        if hasName {
+            let chatVC = MainChatViewController()
+            navigationController?.setViewControllers([chatVC], animated: true)
+        } else {
+            let nameVC = NameEntryViewController()
+            navigationController?.pushViewController(nameVC, animated: true)
+        }
     }
 
     private func setLoading(_ loading: Bool) {
@@ -219,7 +227,7 @@ final class OnboardingViewController: UIViewController {
     }
 
     private func showAlert(message: String) {
-        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        let alert = UIAlertController(title: "Ошибка", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
     }

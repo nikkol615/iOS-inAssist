@@ -28,15 +28,15 @@ final class MenuViewController: UIViewController {
     
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Menu"
+        label.text = "Меню"
         label.font = AppFonts.titleMedium
         label.textColor = AppColors.primaryText
         return label
     }()
-    
+
     private let chatsLabel: UILabel = {
         let label = UILabel()
-        label.text = "Chats"
+        label.text = "Чаты"
         label.font = AppFonts.bodyLarge
         label.textColor = AppColors.primaryText
         return label
@@ -75,7 +75,7 @@ final class MenuViewController: UIViewController {
         let iconConfig = UIImage.SymbolConfiguration(pointSize: 14, weight: .medium)
         config.image = UIImage(systemName: "calendar", withConfiguration: iconConfig)
         
-        var titleAttr = AttributedString("My calendar")
+        var titleAttr = AttributedString("Мой календарь")
         titleAttr.font = AppFonts.sfProDisplayMedium(14)
         config.attributedTitle = titleAttr
         
@@ -332,6 +332,16 @@ final class MenuViewController: UIViewController {
             self?.delegate?.menuDidOpenCalendar()
         }
     }
+
+    private func openCalendarSheet() {
+        let calVC = CalendarViewController()
+        calVC.modalPresentationStyle = .pageSheet
+        if let sheet = calVC.sheetPresentationController {
+            sheet.detents = [.large()]
+            sheet.prefersGrabberVisible = true
+        }
+        present(calVC, animated: true)
+    }
 }
 
 // MARK: - UITableViewDataSource
@@ -369,67 +379,76 @@ extension MenuViewController: UITableViewDelegate {
 
 // MARK: - ChatListCell
 
+// Figma: menu.jpg — чат-ячейка со статус-иконкой
+// done=синяя галочка, cancelled=тёмный крест, active=серые часы
 final class ChatListCell: UITableViewCell {
 
-    private let iconImageView: UIImageView = {
-        let imageView = UIImageView()
-        let config = UIImage.SymbolConfiguration(pointSize: 12, weight: .regular)
-        imageView.image = UIImage(systemName: "message", withConfiguration: config)
-        imageView.tintColor = AppColors.primaryText
-        imageView.contentMode = .scaleAspectFit
-        return imageView
+    private let statusView: UIImageView = {
+        let iv = UIImageView()
+        iv.contentMode = .scaleAspectFit
+        return iv
     }()
-    
+
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = AppFonts.bodyMedium
         label.textColor = AppColors.primaryText
         return label
     }()
-    
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
     }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
+
+    required init?(coder: NSCoder) { fatalError() }
+
     private func setupUI() {
         backgroundColor = .clear
         selectionStyle = .none
-        
-        contentView.addSubview(iconImageView)
+
+        contentView.addSubview(statusView)
         contentView.addSubview(titleLabel)
-        
-        [iconImageView, titleLabel].forEach {
-            $0.translatesAutoresizingMaskIntoConstraints = false
-        }
-        
+        [statusView, titleLabel].forEach { $0.translatesAutoresizingMaskIntoConstraints = false }
+
         NSLayoutConstraint.activate([
-            iconImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            iconImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            iconImageView.widthAnchor.constraint(equalToConstant: 16),
-            iconImageView.heightAnchor.constraint(equalToConstant: 16),
-            
-            titleLabel.leadingAnchor.constraint(equalTo: iconImageView.trailingAnchor, constant: 12),
+            statusView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            statusView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            statusView.widthAnchor.constraint(equalToConstant: 20),
+            statusView.heightAnchor.constraint(equalToConstant: 20),
+
+            titleLabel.leadingAnchor.constraint(equalTo: statusView.trailingAnchor, constant: 10),
             titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor)
+            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
         ])
     }
-    
+
     func configure(with chat: ChatInfo) {
+        // Статус-иконка по полю status
+        let sym = UIImage.SymbolConfiguration(pointSize: 14, weight: .medium)
+        switch chat.status ?? "active" {
+        case "done":
+            statusView.image = UIImage(systemName: "checkmark.circle.fill", withConfiguration: sym)
+            statusView.tintColor = AppColors.accentBlue
+        case "cancelled":
+            statusView.image = UIImage(systemName: "xmark.circle.fill", withConfiguration: sym)
+            statusView.tintColor = AppColors.primaryText
+        default: // active / nil
+            statusView.image = UIImage(systemName: "clock", withConfiguration: sym)
+            statusView.tintColor = AppColors.secondaryText
+        }
+
+        // Название чата по дате
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-
         if let dateString = chat.createdAt,
            let date = dateFormatter.date(from: String(dateString.prefix(19))) {
             let displayFormatter = DateFormatter()
-            displayFormatter.dateFormat = "MMM d"
-            titleLabel.text = "Chat from \(displayFormatter.string(from: date))"
+            displayFormatter.locale = Locale(identifier: "ru_RU")
+            displayFormatter.dateFormat = "d MMM"
+            titleLabel.text = "Чат от \(displayFormatter.string(from: date))"
         } else {
-            titleLabel.text = "Chat #\(chat.id)"
+            titleLabel.text = "Чат #\(chat.id)"
         }
     }
 }

@@ -261,10 +261,95 @@ final class APIClient {
             }
             do {
                 let decoded = try self.decoder.decode(ChatCreateResponse.self, from: data)
-                let info = ChatInfo(id: decoded.id, fileKey: decoded.fileKey, createdAt: nil)
+                let info = ChatInfo(id: decoded.id, fileKey: decoded.fileKey, createdAt: nil, status: nil)
                 completion(.success(info))
             } catch {
                 completion(.failure(APIError.decoding))
+            }
+        }.resume()
+    }
+
+    // MARK: - Voice Transcription
+
+    func transcribe(audioFileURL: URL, completion: @escaping (Result<String, Error>) -> Void) {
+        let url = APIConfig.mlBaseURL.appendingPathComponent("api/v1/transcribe")
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.timeoutInterval = 60
+
+        let boundary = "Boundary-\(UUID().uuidString)"
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+
+        guard let audioData = try? Data(contentsOf: audioFileURL) else {
+            completion(.failure(APIError.unknown))
+            return
+        }
+
+        var body = Data()
+        let filename = audioFileURL.lastPathComponent
+        body.append("--\(boundary)\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"file\"; filename=\"\(filename)\"\r\n".data(using: .utf8)!)
+        body.append("Content-Type: audio/m4a\r\n\r\n".data(using: .utf8)!)
+        body.append(audioData)
+        body.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
+        request.httpBody = body
+
+        session.dataTask(with: request) { [weak self] data, response, error in
+            if let error = error {
+                APIClient.handleNetworkError(error)
+                completion(.failure(error))
+                return
+            }
+            guard let data, let self else {
+                completion(.failure(APIError.unknown))
+                return
+            }
+            do {
+                let decoded = try self.decoder.decode(TranscribeResponse.self, from: data)
+                completion(.success(decoded.text))
+            } catch {
+                completion(.failure(APIError.decoding))
+            }
+        }.resume()
+    }
+
+    // MARK: - Calendar Events
+
+    func fetchCalendarEvents(user: SessionUser, completion: @escaping (Result<[CalendarEventResponse], Error>) -> Void) {
+        // Backend: GET /calendar/events?user_id=...&time_min=...&time_max=...
+        // Загружаем события на 30 дней вперёд
+        let now = Date()
+        let in30days = Calendar.current.date(byAdding: .day, value: 30, to: now) ?? now
+        let iso = ISO8601DateFormatter()
+        iso.formatOptions = [.withInternetDateTime]
+
+        var components = URLComponents(url: APIConfig.baseURL.appendingPathComponent("calendar/events"), resolvingAgainstBaseURL: false)
+        components?.queryItems = [
+            URLQueryItem(name: "user_id", value: user.userID),
+            URLQueryItem(name: "time_min", value: iso.string(from: now)),
+            URLQueryItem(name: "time_max", value: iso.string(from: in30days)),
+            URLQueryItem(name: "max_results", value: "50"),
+        ]
+        guard let url = components?.url else {
+            completion(.failure(APIError.invalidURL))
+            return
+        }
+        session.dataTask(with: url) { [weak self] data, response, error in
+            if let error = error {
+                APIClient.handleNetworkError(error)
+                completion(.failure(error))
+                return
+            }
+            guard let data, let self else {
+                completion(.failure(APIError.unknown))
+                return
+            }
+            do {
+                let decoded = try self.decoder.decode(CalendarEventsListResponse.self, from: data)
+                completion(.success(decoded.items))
+            } catch {
+                // Fallback: если нет endpoint — вернуть пустой список
+                completion(.success([]))
             }
         }.resume()
     }

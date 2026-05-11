@@ -25,24 +25,27 @@ extension UIColor {
 // MARK: - Design System Colors
 
 enum AppColors {
-    static let background = UIColor.hex("#F9F9F9", default: .white)
+    // Figma: чистый светло-серый фон #F2F2F7 (iOS grouped background)
+    static let background = UIColor.hex("#F2F2F7", default: UIColor(red: 0.949, green: 0.949, blue: 0.969, alpha: 1))
     static let white = UIColor.white
     static let black = UIColor.hex("#1A1A1A")
 
     static let primaryText = UIColor.hex("#1A1A1A")
-    static let secondaryText = UIColor.hex("#808080")
-    static let messageText = UIColor.hex("#505050")
+    static let secondaryText = UIColor.hex("#8E8E93")
+    static let messageText = UIColor.hex("#3C3C43")
 
-    static let userBubble = UIColor.hex("#F0F0F0")
-    static let cardBackground = UIColor.white.withAlphaComponent(0.72)
+    static let userBubble = UIColor.hex("#EBEBEB")
+    static let cardBackground = UIColor.white
     static let buttonBackground = UIColor.hex("#1A1A1A")
-    static let buttonBorder = UIColor.hex("#373737")
-    static let divider = UIColor.hex("#DADADA")
-    static let inputBorder = UIColor.hex("#F1F1F1")
-    static let chipBackground = UIColor.hex("#EAEAEA")
+    static let buttonBorder = UIColor.hex("#3A3A3A")
+    static let divider = UIColor.hex("#E5E5EA")
+    static let inputBorder = UIColor.hex("#E5E5EA")
+    static let chipBackground = UIColor.hex("#EBEBEB")
 
-    static let gradientStart = UIColor.hex("#F9F9F9", default: .white).withAlphaComponent(0)
-    static let gradientEnd = UIColor.hex("#D6D6D6", default: .gray)
+    // Figma: акцентный синий (кнопки Continue, Join meet, mic)
+    static let accentBlue = UIColor.hex("#5B7BFF", default: .systemBlue)
+    // Google Blue для mic иконки
+    static let googleBlue = UIColor.hex("#4285F4", default: .systemBlue)
 }
 
 // MARK: - Design System Fonts

@@ -20,16 +20,17 @@ final class ModernChatCell: UITableViewCell {
     }()
     
     private let linkButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.backgroundColor = UIColor.systemBlue.withAlphaComponent(0.12)
-        button.setTitle("Open in calendar", for: .normal)
+        var config = UIButton.Configuration.plain()
+        config.title = "Открыть в календаре"
+        config.baseForegroundColor = .systemBlue
+        config.background.backgroundColor = UIColor.systemBlue.withAlphaComponent(0.12)
+        config.background.cornerRadius = AppCornerRadius.small
+        config.background.strokeColor = UIColor.systemBlue.withAlphaComponent(0.35)
+        config.background.strokeWidth = 1
+        config.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12)
+        let button = UIButton(configuration: config)
         button.titleLabel?.font = AppFonts.bodySmall
-        button.layer.cornerRadius = AppCornerRadius.small
-        button.tintColor = .systemBlue
         button.isHidden = true
-        button.contentEdgeInsets = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12)
-        button.layer.borderWidth = 1
-        button.layer.borderColor = UIColor.systemBlue.withAlphaComponent(0.35).cgColor
         return button
     }()
     
@@ -139,13 +140,7 @@ final class ModernChatCell: UITableViewCell {
             bubbleTrailing?.isActive = false
 
             linkButton.isHidden = item.link == nil
-
-            let showActions = item.text.contains("Would you like") || item.text.contains("Suggestion")
-            actionButtonsStack.isHidden = !showActions
-
-            if showActions && actionButtonsStack.arrangedSubviews.isEmpty {
-                setupActionButtons()
-            }
+            actionButtonsStack.isHidden = true
         }
 
         if !linkButton.isHidden {

@@ -55,5 +55,7 @@
 	</dict>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>inAssist использует микрофон для голосового ввода запросов к календарю.</string>
 </dict>
 </plist>

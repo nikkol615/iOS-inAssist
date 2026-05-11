@@ -6,7 +6,7 @@ final class ProfileViewController: UIViewController {
 
     private let closeButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Close", for: .normal)
+        button.setTitle("Закрыть", for: .normal)
         button.titleLabel?.font = AppFonts.bodyLarge
         button.tintColor = AppColors.primaryText
         return button
@@ -59,11 +59,11 @@ final class ProfileViewController: UIViewController {
     }()
     
     private let menuItems: [(icon: String, title: String)] = [
-        ("shield", "Privacy Center"),
-        ("gearshape", "Settings"),
-        ("exclamationmark.triangle", "Report a problem"),
-        ("questionmark.circle", "Help"),
-        ("rectangle.portrait.and.arrow.right", "Log out")
+        ("shield", "Конфиденциальность"),
+        ("gearshape", "Настройки"),
+        ("exclamationmark.triangle", "Сообщить о проблеме"),
+        ("questionmark.circle", "Помощь"),
+        ("rectangle.portrait.and.arrow.right", "Выйти")
     ]
 
     // MARK: - Lifecycle
@@ -178,23 +178,28 @@ final class ProfileViewController: UIViewController {
         
         switch hour {
         case 5..<12:
-            greeting = "Good morning"
+            greeting = "Доброе утро"
         case 12..<17:
-            greeting = "Good afternoon"
+            greeting = "Добрый день"
         case 17..<22:
-            greeting = "Good evening"
+            greeting = "Добрый вечер"
         default:
-            greeting = "Good night"
+            greeting = "Доброй ночи"
         }
 
-        if let user = SessionStore.shared.currentUser {
-            let name = user.email.components(separatedBy: "@").first?.capitalized ?? "User"
+        let firstName = UserDefaults.standard.string(forKey: "inassist.user.firstName") ?? ""
+        let lastName  = UserDefaults.standard.string(forKey: "inassist.user.lastName") ?? ""
+        let fullName  = [firstName, lastName].filter { !$0.isEmpty }.joined(separator: " ")
+
+        if !fullName.isEmpty {
+            greetingLabel.text = "\(greeting), \(firstName)!"
+        } else if let user = SessionStore.shared.currentUser {
+            let name = user.email.components(separatedBy: "@").first?.capitalized ?? "Пользователь"
             greetingLabel.text = "\(greeting), \(name)!"
-            emailLabel.text = user.email
         } else {
             greetingLabel.text = "\(greeting)!"
-            emailLabel.text = ""
         }
+        emailLabel.text = SessionStore.shared.currentUser?.email ?? ""
     }
     
     // MARK: - Actions
@@ -215,9 +220,9 @@ final class ProfileViewController: UIViewController {
     }
 
     private func handleLogout() {
-        let alert = UIAlertController(title: "Log Out", message: "Are you sure you want to log out?", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        alert.addAction(UIAlertAction(title: "Log Out", style: .destructive) { [weak self] _ in
+        let alert = UIAlertController(title: "Выход", message: "Вы уверены, что хотите выйти?", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Отмена", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Выйти", style: .destructive) { [weak self] _ in
             SessionStore.shared.currentUser = nil
 
             if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,

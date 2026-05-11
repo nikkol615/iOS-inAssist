@@ -1,5 +1,6 @@
 import UIKit
 import SafariServices
+import AVFoundation
 
 final class MainChatViewController: UIViewController {
 
@@ -9,6 +10,7 @@ final class MainChatViewController: UIViewController {
     private var currentChatId: Int?
     private var keyboardHeight: CGFloat = 0
     private var isWaitingForResponse = false
+    private let voiceRecorder = VoiceRecorder()
 
     // MARK: - UI Elements
     
@@ -68,7 +70,7 @@ final class MainChatViewController: UIViewController {
     
     private let mainTitleLabel: UILabel = {
         let label = UILabel()
-        label.text = "What are we planning for today?"
+        label.text = "Что планируем сегодня?"
         label.font = AppFonts.titleMedium
         label.textColor = AppColors.primaryText
         label.textAlignment = .center
@@ -113,7 +115,7 @@ final class MainChatViewController: UIViewController {
     
     private let inputContainer: UIView = {
         let view = UIView()
-        view.backgroundColor = AppColors.cardBackground
+        view.backgroundColor = AppColors.white
         view.layer.cornerRadius = AppCornerRadius.extraLarge
         AppShadows.card(view)
         return view
@@ -121,7 +123,7 @@ final class MainChatViewController: UIViewController {
     
     private let inputField: UITextField = {
         let field = UITextField()
-        field.placeholder = "Ask anything"
+        field.placeholder = "Напишите запрос..."
         field.font = AppFonts.bodyMedium
         field.textColor = AppColors.primaryText
         field.returnKeyType = .send
@@ -130,15 +132,13 @@ final class MainChatViewController: UIViewController {
     
     private let micButton: UIButton = {
         let button = UIButton(type: .system)
-        button.backgroundColor = .white
+        button.backgroundColor = AppColors.googleBlue
         button.layer.cornerRadius = 18
-        button.layer.borderWidth = 0.5
-        button.layer.borderColor = AppColors.inputBorder.cgColor
-        button.tintColor = AppColors.primaryText
-        
+        button.tintColor = .white
+
         let config = UIImage.SymbolConfiguration(pointSize: 14, weight: .medium)
         button.setImage(UIImage(systemName: "mic.fill", withConfiguration: config), for: .normal)
-        
+
         AppShadows.small(button)
         return button
     }()
@@ -146,9 +146,9 @@ final class MainChatViewController: UIViewController {
     private var bottomContainerBottom: NSLayoutConstraint?
     
     private let suggestions = [
-        "What do I've planned for today?",
-        "Find a free hour tonight",
-        "Is Tuesday evening free?"
+        "Что запланировано на сегодня?",
+        "Найди свободный час вечером",
+        "Свободен ли вечер вторника?"
     ]
     
     // MARK: - Lifecycle
@@ -158,6 +158,7 @@ final class MainChatViewController: UIViewController {
         setupUI()
         setupActions()
         setupKeyboardObservers()
+        setupVoiceRecorder()
         updateGreeting()
         loadOrCreateChat()
     }
@@ -176,12 +177,6 @@ final class MainChatViewController: UIViewController {
     private func setupUI() {
         view.backgroundColor = AppColors.background
 
-        let gradientLayer = CAGradientLayer()
-        gradientLayer.colors = [AppColors.gradientStart.cgColor, AppColors.gradientEnd.cgColor]
-        gradientLayer.locations = [0.0, 1.0]
-        gradientLayer.frame = view.bounds
-        view.layer.insertSublayer(gradientLayer, at: 0)
-
         view.addSubview(headerView)
         headerView.addSubview(menuButton)
         headerView.addSubview(calendarButton)
@@ -196,6 +191,8 @@ final class MainChatViewController: UIViewController {
         tableView.delegate = self
         tableView.register(ModernChatCell.self, forCellReuseIdentifier: "cell")
         tableView.register(TypingIndicatorCell.self, forCellReuseIdentifier: "typingCell")
+        tableView.register(EventPreviewCardCell.self, forCellReuseIdentifier: "previewCard")
+        tableView.register(MeetEventCell.self, forCellReuseIdentifier: "meetCard")
         tableView.isHidden = true
 
         view.addSubview(bottomContainer)
@@ -305,22 +302,22 @@ final class MainChatViewController: UIViewController {
     }
     
     private func createChipButton(icon: String?, text: String?) -> UIButton {
-        let button = UIButton(type: .system)
-        button.backgroundColor = AppColors.cardBackground
-        button.layer.cornerRadius = AppCornerRadius.small
-        button.tintColor = AppColors.primaryText
-        AppShadows.card(button)
-        
+        var config = UIButton.Configuration.plain()
+        config.baseForegroundColor = AppColors.primaryText
+        config.background.backgroundColor = AppColors.cardBackground
+        config.background.cornerRadius = AppCornerRadius.small
+        config.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 12, bottom: 10, trailing: 12)
+
         if let icon = icon {
-            let config = UIImage.SymbolConfiguration(pointSize: 12, weight: .medium)
-            button.setImage(UIImage(systemName: icon, withConfiguration: config), for: .normal)
-            button.contentEdgeInsets = UIEdgeInsets(top: 10, left: 12, bottom: 10, right: 12)
+            config.image = UIImage(systemName: icon,
+                                   withConfiguration: UIImage.SymbolConfiguration(pointSize: 12, weight: .medium))
         } else if let text = text {
-            button.setTitle(text, for: .normal)
-            button.titleLabel?.font = AppFonts.bodySmall
-            button.contentEdgeInsets = UIEdgeInsets(top: 10, left: 12, bottom: 10, right: 12)
+            config.title = text
         }
-        
+
+        let button = UIButton(configuration: config)
+        button.titleLabel?.font = AppFonts.bodySmall
+        AppShadows.card(button)
         return button
     }
     
@@ -355,17 +352,20 @@ final class MainChatViewController: UIViewController {
         
         switch hour {
         case 5..<12:
-            greeting = "Good morning"
+            greeting = "Доброе утро"
         case 12..<17:
-            greeting = "Good afternoon"
+            greeting = "Добрый день"
         case 17..<22:
-            greeting = "Good evening"
+            greeting = "Добрый вечер"
         default:
-            greeting = "Good night"
+            greeting = "Доброй ночи"
         }
-        
-        if let user = SessionStore.shared.currentUser {
-            let name = user.email.components(separatedBy: "@").first?.capitalized ?? "User"
+
+        let firstName = UserDefaults.standard.string(forKey: "inassist.user.firstName")
+        if let name = firstName, !name.isEmpty {
+            greetingLabel.text = "\(greeting), \(name)!"
+        } else if let user = SessionStore.shared.currentUser {
+            let name = user.email.components(separatedBy: "@").first?.capitalized ?? "Пользователь"
             greetingLabel.text = "\(greeting), \(name)!"
         } else {
             greetingLabel.text = "\(greeting)!"
@@ -406,6 +406,7 @@ final class MainChatViewController: UIViewController {
                         }
                         self.showChatMode()
                     }
+                    // pendingConfirmation = false для всех исторических сообщений (уже обработаны)
                 case .failure:
                     break
                 }
@@ -456,14 +457,92 @@ final class MainChatViewController: UIViewController {
     }
 
     private func openGoogleCalendar() {
-        guard let url = URL(string: "https://calendar.google.com/calendar/u/0/r") else { return }
-        let config = SFSafariViewController.Configuration()
-        config.entersReaderIfAvailable = false
-        let safari = SFSafariViewController(url: url, configuration: config)
-        present(safari, animated: true)
+        let calVC = CalendarViewController()
+        calVC.modalPresentationStyle = .pageSheet
+        if let sheet = calVC.sheetPresentationController {
+            sheet.detents = [.large()]
+            sheet.prefersGrabberVisible = true
+        }
+        present(calVC, animated: true)
     }
     
+    // MARK: - Voice Recorder Setup
+
+    private func setupVoiceRecorder() {
+        voiceRecorder.onStateChange = { [weak self] state in
+            self?.updateMicButton(for: state)
+        }
+        voiceRecorder.onTranscript = { [weak self] text in
+            guard let self else { return }
+            self.inputField.text = text
+            // Вставляем текст — пользователь видит его и может нажать отправить
+            // (не автоотправляем, чтобы дать возможность проверить)
+        }
+        voiceRecorder.onError = { [weak self] error in
+            self?.showAlert(message: error.localizedDescription)
+        }
+    }
+
+    private func updateMicButton(for state: VoiceRecorder.State) {
+        let symCfg = UIImage.SymbolConfiguration(pointSize: 14, weight: .medium)
+        switch state {
+        case .idle:
+            micButton.setImage(UIImage(systemName: "mic.fill", withConfiguration: symCfg), for: .normal)
+            micButton.backgroundColor = AppColors.googleBlue
+            micButton.tintColor = .white
+            micButton.layer.removeAllAnimations()
+            micButton.transform = .identity
+
+        case .recording:
+            micButton.setImage(UIImage(systemName: "stop.fill", withConfiguration: symCfg), for: .normal)
+            micButton.backgroundColor = .systemRed
+            micButton.tintColor = .white
+            // Пульсирующая анимация
+            UIView.animate(
+                withDuration: 0.6,
+                delay: 0,
+                options: [.repeat, .autoreverse, .curveEaseInOut],
+                animations: { self.micButton.transform = CGAffineTransform(scaleX: 1.18, y: 1.18) }
+            )
+
+        case .processing:
+            micButton.layer.removeAllAnimations()
+            micButton.transform = .identity
+            micButton.setImage(nil, for: .normal)
+            micButton.backgroundColor = AppColors.googleBlue
+            // Показываем спиннер поверх кнопки
+            let spinner = UIActivityIndicatorView(style: .medium)
+            spinner.color = .white
+            spinner.tag = 999
+            spinner.translatesAutoresizingMaskIntoConstraints = false
+            micButton.addSubview(spinner)
+            NSLayoutConstraint.activate([
+                spinner.centerXAnchor.constraint(equalTo: micButton.centerXAnchor),
+                spinner.centerYAnchor.constraint(equalTo: micButton.centerYAnchor),
+            ])
+            spinner.startAnimating()
+        }
+
+        // Убираем спиннер при выходе из .processing
+        if state != .processing {
+            micButton.viewWithTag(999)?.removeFromSuperview()
+        }
+
+        // Блокируем поле ввода во время записи/обработки (ТЗ 4.1.4.9.3)
+        let isActive = state == .idle
+        inputField.isEnabled = isActive
+        inputField.alpha = isActive ? 1.0 : 0.4
+    }
+
     @objc private func handleMicTap() {
+        switch voiceRecorder.currentState {
+        case .idle:
+            voiceRecorder.requestPermissionAndStart()
+        case .recording:
+            voiceRecorder.stop()
+        case .processing:
+            break  // не прерываем загрузку
+        }
     }
     
     @objc private func handleNewChat() {
@@ -518,14 +597,14 @@ final class MainChatViewController: UIViewController {
     private func handleSend() {
         guard let text = inputField.text?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty else { return }
         guard let user = SessionStore.shared.currentUser else {
-            showAlert(message: "Please sign in first")
+            showAlert(message: "Сначала войдите в аккаунт")
             return
         }
 
         inputField.text = nil
         inputField.resignFirstResponder()
 
-        items.append(ChatItem(sender: .user, text: text, link: nil))
+        items.append(ChatItem(sender: .user, text: text, link: nil, pendingConfirmation: false))
         showChatMode()
         isWaitingForResponse = true
         tableView.reloadData()
@@ -537,10 +616,29 @@ final class MainChatViewController: UIViewController {
                 self.isWaitingForResponse = false
                 switch result {
                 case .success(let response):
-                    let responseText = response.summary ?? "Event created"
-                    self.items.append(ChatItem(sender: .assistant, text: responseText, link: response.htmlLink))
+                    if let cid = response.chatID {
+                        self.currentChatId = cid
+                    }
+                    if response.eventCreated == false {
+                        self.items.append(ChatItem(
+                            sender: .assistant,
+                            text: response.summary ?? "",
+                            link: nil,
+                            eventStart: response.eventStart,
+                            eventEnd: response.eventEnd,
+                            eventLocation: response.eventLocation,
+                            eventDescription: response.eventDescription,
+                            pendingConfirmation: true
+                        ))
+                    } else {
+                        self.items.append(ChatItem(
+                            sender: .assistant,
+                            text: response.summary ?? "Готово",
+                            link: response.htmlLink
+                        ))
+                    }
                 case .failure(let error):
-                    self.items.append(ChatItem(sender: .assistant, text: "Error: \(error.localizedDescription)", link: nil))
+                    self.items.append(ChatItem(sender: .assistant, text: "Ошибка: \(error.localizedDescription)", link: nil))
                 }
                 self.tableView.reloadData()
                 self.scrollToBottom(animated: true)
@@ -549,7 +647,7 @@ final class MainChatViewController: UIViewController {
     }
     
     private func showAlert(message: String) {
-        let alert = UIAlertController(title: "Notice", message: message, preferredStyle: .alert)
+        let alert = UIAlertController(title: "Уведомление", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
     }
@@ -567,6 +665,53 @@ extension MainChatViewController: UITableViewDataSource {
             return tableView.dequeueReusableCell(withIdentifier: "typingCell", for: indexPath)
         }
         let item = items[indexPath.row]
+
+        // Подтверждённое событие с ссылкой → meet-карточка (meet.jpg)
+        if item.sender == .assistant && !item.pendingConfirmation && item.link != nil {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "meetCard", for: indexPath) as? MeetEventCell else {
+                return UITableViewCell()
+            }
+            cell.configure(with: item)
+            cell.onJoinMeet = { [weak self] url in
+                let safari = SFSafariViewController(url: url)
+                self?.present(safari, animated: true)
+            }
+            cell.onOpenCalendar = { [weak self] url in
+                let safari = SFSafariViewController(url: url)
+                self?.present(safari, animated: true)
+            }
+            return cell
+        }
+
+        if item.pendingConfirmation {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "previewCard", for: indexPath) as? EventPreviewCardCell else {
+                return UITableViewCell()
+            }
+            cell.configure(with: item)
+            cell.onConfirm = { [weak self] in
+                guard let self else { return }
+                // Убираем карточку из списка
+                if let idx = self.items.firstIndex(where: { $0.id == item.id }) {
+                    self.items.remove(at: idx)
+                }
+                self.inputField.text = "Да, создай"
+                self.handleSend()
+            }
+            cell.onEdit = { [weak self] suggestion in
+                guard let self else { return }
+                self.inputField.text = suggestion
+                self.inputField.becomeFirstResponder()
+            }
+            cell.onCancel = { [weak self] in
+                guard let self else { return }
+                if let idx = self.items.firstIndex(where: { $0.id == item.id }) {
+                    self.items.remove(at: idx)
+                    self.tableView.deleteRows(at: [IndexPath(row: idx, section: 0)], with: .fade)
+                }
+            }
+            return cell
+        }
+
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? ModernChatCell else {
             return UITableViewCell()
         }

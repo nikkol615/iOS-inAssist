@@ -8,6 +8,14 @@ enum APIConfig {
         }
         return url
     }()
+    // ML-сервис (транскрипция голоса)
+    static let mlBaseURLString = "http://qg8gk4gko4sc0wkgw8w4owgo.194.147.95.202.sslip.io"
+    static let mlBaseURL: URL = {
+        guard let url = URL(string: mlBaseURLString) else {
+            fatalError("Invalid APIConfig mlBaseURL: \(mlBaseURLString)")
+        }
+        return url
+    }()
     static let redirectScheme = "inassist"
     static var redirectURI: String { "\(redirectScheme)://auth" }
 }
@@ -56,11 +64,23 @@ struct ChatMessageResponse: Codable {
     let htmlLink: URL?
     let calendarID: String?
     let summary: String?
+    let eventCreated: Bool?
+    let chatID: Int?
+    let eventStart: String?
+    let eventEnd: String?
+    let eventLocation: String?
+    let eventDescription: String?
     private enum CodingKeys: String, CodingKey {
         case eventID = "event_id"
         case htmlLink = "html_link"
         case calendarID = "calendar_id"
         case summary
+        case eventCreated = "event_created"
+        case chatID = "chat_id"
+        case eventStart = "event_start"
+        case eventEnd = "event_end"
+        case eventLocation = "event_location"
+        case eventDescription = "event_description"
     }
 }
 
@@ -79,6 +99,25 @@ struct ChatItem {
     let sender: Sender
     let text: String
     let link: URL?
+    let eventStart: String?
+    let eventEnd: String?
+    let eventLocation: String?
+    let eventDescription: String?
+    let pendingConfirmation: Bool
+
+    init(sender: Sender, text: String, link: URL?,
+         eventStart: String? = nil, eventEnd: String? = nil,
+         eventLocation: String? = nil, eventDescription: String? = nil,
+         pendingConfirmation: Bool = false) {
+        self.sender = sender
+        self.text = text
+        self.link = link
+        self.eventStart = eventStart
+        self.eventEnd = eventEnd
+        self.eventLocation = eventLocation
+        self.eventDescription = eventDescription
+        self.pendingConfirmation = pendingConfirmation
+    }
 }
 
 struct ChatHistoryMessage: Codable {
@@ -102,10 +141,12 @@ struct ChatInfo: Codable {
     let id: Int
     let fileKey: String
     let createdAt: String?
+    let status: String?  // "active" | "done" | "cancelled"
     private enum CodingKeys: String, CodingKey {
         case id
         case fileKey = "file_key"
         case createdAt = "created_at"
+        case status
     }
 }
 
@@ -129,4 +170,25 @@ struct ChatCreateResponse: Codable {
         case id
         case fileKey = "file_key"
     }
+}
+
+struct TranscribeResponse: Codable { let text: String }
+
+struct CalendarEventResponse: Codable {
+    let id: String?
+    let summary: String?
+    let start: String?
+    let end: String?
+    let htmlLink: String?
+    let location: String?
+    let description: String?
+    private enum CodingKeys: String, CodingKey {
+        case id, summary, start, end
+        case htmlLink = "html_link"
+        case location, description
+    }
+}
+
+struct CalendarEventsListResponse: Codable {
+    let items: [CalendarEventResponse]
 }
