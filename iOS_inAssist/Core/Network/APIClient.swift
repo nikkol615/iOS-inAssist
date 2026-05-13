@@ -23,7 +23,7 @@ final class APIClient {
 
     private let session: URLSession = {
         let config = URLSessionConfiguration.default
-        config.timeoutIntervalForRequest = 90
+        config.timeoutIntervalForRequest = 120
         return URLSession(configuration: config)
     }()
 
@@ -141,7 +141,14 @@ final class APIClient {
                     return
                 }
                 if !(200...299).contains(http.statusCode) {
-                    completion(.failure(APIError.server(HTTPURLResponse.localizedString(forStatusCode: http.statusCode))))
+                    // Пробуем вытащить detail из тела ответа (FastAPI HTTPException)
+                    if let data = data,
+                       let json = try? JSONDecoder().decode([String: String].self, from: data),
+                       let detail = json["detail"] {
+                        completion(.failure(APIError.server(detail)))
+                    } else {
+                        completion(.failure(APIError.server(HTTPURLResponse.localizedString(forStatusCode: http.statusCode))))
+                    }
                     return
                 }
             }
@@ -356,15 +363,10 @@ final class APIClient {
 
     private static func handleNetworkError(_ error: Error) {
         let ns = error as NSError
-        if ns.domain == NSURLErrorDomain {
-            switch ns.code {
-            case NSURLErrorNotConnectedToInternet,
-                 NSURLErrorNetworkConnectionLost,
-                 NSURLErrorTimedOut:
-                AppRouter.showNetworkErrorAlert()
-            default:
-                break
-            }
+        if ns.domain == NSURLErrorDomain, ns.code == NSURLErrorNotConnectedToInternet {
+            // Только реальное отсутствие интернета — глобальный алерт.
+            // Таймаут и обрыв соединения обрабатываются через friendlyError в ViewController.
+            AppRouter.showNetworkErrorAlert()
         }
     }
 }

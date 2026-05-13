@@ -638,7 +638,7 @@ final class MainChatViewController: UIViewController {
                         ))
                     }
                 case .failure(let error):
-                    self.items.append(ChatItem(sender: .assistant, text: "Ошибка: \(error.localizedDescription)", link: nil))
+                    self.items.append(ChatItem(sender: .assistant, text: Self.friendlyError(error), link: nil))
                 }
                 self.tableView.reloadData()
                 self.scrollToBottom(animated: true)
@@ -646,6 +646,30 @@ final class MainChatViewController: UIViewController {
         }
     }
     
+    private static func friendlyError(_ error: Error) -> String {
+        // Пробуем вытащить detail из HTTP-ответа сервера (APIError.server)
+        if let apiError = error as? APIError, case APIError.server(let msg) = apiError {
+            return msg
+        }
+        let ns = error as NSError
+        switch ns.code {
+        case NSURLErrorTimedOut,
+             NSURLErrorNetworkConnectionLost:
+            return "Ассистент думает дольше обычного. Попробуйте ещё раз."
+        case NSURLErrorNotConnectedToInternet:
+            return "Нет подключения к интернету."
+        case NSURLErrorCannotConnectToHost:
+            return "Сервер недоступен. Попробуйте позже."
+        default:
+            // Если сервер вернул HTTP-ошибку с текстом — показываем её
+            if let msg = ns.userInfo[NSLocalizedDescriptionKey] as? String,
+               !msg.hasPrefix("The "), !msg.hasPrefix("A ") {
+                return msg
+            }
+            return "Не удалось отправить запрос. Попробуйте ещё раз."
+        }
+    }
+
     private func showAlert(message: String) {
         let alert = UIAlertController(title: "Уведомление", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
